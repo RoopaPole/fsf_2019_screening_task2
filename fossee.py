@@ -10,7 +10,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PyQt5.uic.properties import QtCore
 from scipy.interpolate import spline
+from PyQt5 import QtGui, QtWidgets
 class MainFrame(QMainWindow):
+    windowList = []
+    global option
     def __init__(self):
         super().__init__()
         self.title = 'PyQt5 simple window'
@@ -23,11 +26,20 @@ class MainFrame(QMainWindow):
 
         self.actionLoad.triggered.connect(self.load_csv_file)
         self.actionPlot_Data.triggered.connect(self.plot)
+        self.menuEdit.triggered.connect(self.edit_data)
         #self.show()
     def setScreen(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
+    def edit_data(self):
+        other = MainFrame()
+        MainFrame.windowList.append(other)
+        other.editTable()
+        other.layout = QVBoxLayout()
+        other.layout.addWidget(self.tableWidget)
+        other.setLayout(self.layout)
+        other.show()
+        self.destroy()
     def on_click_scatter(self):
         dataset=data.iloc[:,:].values
         x_axis=dataset[:,0]
@@ -53,9 +65,6 @@ class MainFrame(QMainWindow):
         plt.show()
 
     def plot(self):
-
-
-
         centralWidget = QWidget(self)
         self.setCentralWidget(centralWidget)
         self.comboBox1= QComboBox(centralWidget)
@@ -75,6 +84,8 @@ class MainFrame(QMainWindow):
                 self.comboBox2.addItem(columns[i])
 
     def load_csv_file(self):
+        global flag
+        flag=0
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         self.fileName= QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
@@ -98,13 +109,37 @@ class MainFrame(QMainWindow):
         self.tableWidget.setRowCount(df[0])
         self.tableWidget.setColumnCount(df[1])
         list=data.values
-        for i in range(0,df[0]):
-            for j in range(0,df[1]):
-                value=str(list[i][j])
-                item=QTableWidgetItem(value)
+        column_names = data.columns
+        for i in range(0,1):
+            for j in range(0,len(column_names)):
+                item = QTableWidgetItem(column_names[j])
                 item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-                self.tableWidget.setItem(i,j,item)
-
+                self.tableWidget.setItem(i, j, item)
+        for i in range(1, df[0]):
+            for j in range(0, df[1]):
+                value = str(list[i][j])
+                item = QTableWidgetItem(value)
+                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.tableWidget.setItem(i, j, item)
+    def editTable(self):
+        df = data.shape
+        centralWidget = QWidget(self)
+        self.setCentralWidget(centralWidget)
+        self.tableWidget = QTableWidget(centralWidget)
+        self.tableWidget.setRowCount(df[0])
+        self.tableWidget.setColumnCount(df[1])
+        list = data.values
+        column_names = data.columns
+        for i in range(0, 1):
+            for j in range(0, len(column_names)):
+                item = QTableWidgetItem(column_names[j])
+                self.tableWidget.setItem(i, j, item)
+        print(column_names)
+        for i in range(1, df[0]):
+            for j in range(0, df[1]):
+                value = str(list[i][j])
+                item = QTableWidgetItem(value)
+                self.tableWidget.setItem(i, j, item)
 if __name__ == '__main__':
     application = QApplication(sys.argv)
     start= MainFrame()
