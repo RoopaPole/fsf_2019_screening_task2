@@ -2,7 +2,7 @@ from PyQt5 import QtGui, QtWidgets
 import sys
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QActionGroup, QFileDialog, \
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox, QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, QRect, Qt
 import pandas as pd
@@ -12,7 +12,7 @@ from PyQt5.uic.properties import QtCore
 from scipy.interpolate import spline
 from PyQt5 import QtGui, QtWidgets
 class MainFrame(QMainWindow):
-    windowList = []
+    FrameList = []
     global option
     def __init__(self):
         super().__init__()
@@ -23,17 +23,20 @@ class MainFrame(QMainWindow):
         self.height = 1500
         self.setScreen()
         loadUi('Screen.ui', self)
-
         self.actionLoad.triggered.connect(self.load_csv_file)
         self.actionPlot_Data.triggered.connect(self.plot)
         self.menuEdit.triggered.connect(self.edit_data)
-        #self.show()
+        self.menuAdd_Data.triggered.connect(self.add_data)
+    def add_data(self):
+        rowCount = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(rowCount)
+        QMessageBox.about(self, "Add Data", "Empty row is Added to The Table You can Add the data now")
     def setScreen(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
     def edit_data(self):
         other = MainFrame()
-        MainFrame.windowList.append(other)
+        MainFrame.FrameList.append(other)
         other.editTable()
         other.layout = QVBoxLayout()
         other.layout.addWidget(self.tableWidget)
@@ -41,6 +44,9 @@ class MainFrame(QMainWindow):
         other.show()
         self.destroy()
     def on_click_scatter(self):
+        plt.title('scatter plot')
+        plt.xlabel('x-axis')
+        plt.ylabel('y-axis')
         dataset=data.iloc[:,:].values
         x_axis=dataset[:,0]
         y_axis=dataset[:,1]
@@ -48,6 +54,9 @@ class MainFrame(QMainWindow):
         plt.show()
 
     def on_click_scatter_smooth(self):
+        plt.title('scatter points with smooth lines')
+        plt.xlabel('x-axis')
+        plt.ylabel('y-axis')
         dataset = data.iloc[:, :].values
         x_axis= dataset[:, 0]
         y_axis= dataset[:, 1]
@@ -58,31 +67,50 @@ class MainFrame(QMainWindow):
         plt.show()
 
     def on_click_lines(self):
+        plt.title('Line Plot')
+        plt.xlabel('x-axis')
+        plt.ylabel('y-axis')
         dataset = data.iloc[:, :].values
+        text1 = str(self.comboBox1.currentText())
+        text2= str(self.comboBox2.currentText())
         x_axis= dataset[:, 0]
         y_axis= dataset[:, 1]
         plt.plot(x_axis,y_axis)
         plt.show()
 
     def plot(self):
-        centralWidget = QWidget(self)
-        self.setCentralWidget(centralWidget)
-        self.comboBox1= QComboBox(centralWidget)
-        self.comboBox1.setGeometry(QRect(3, 3, 600, 31))
-        self.comboBox1.setObjectName(("comboBox1"))
+        other = MainFrame()
+        MainFrame.FrameList.append(other)
+        centralWidget = QWidget(other)
+        other.setCentralWidget(centralWidget)
+        other.comboBox1= QComboBox(centralWidget)
+        other.comboBox1.setGeometry(QRect(3, 3, 600, 31))
+        other.comboBox1.setObjectName(("comboBox1"))
         dimension=data.shape
         columns = list(data.head(0))
-        self.comboBox1.addItem('please select column1')
+        other.comboBox1.addItem('please select column1')
         for i in range (0,dimension[1]):
-             self.comboBox1.addItem(columns[i])
+             other.comboBox1.addItem(columns[i])
 
-        self.comboBox2 = QComboBox(centralWidget)
-        self.comboBox2.setGeometry(QRect(610, 3, 600, 31))
-        self.comboBox2.setObjectName(("comboBox2"))
-        self.comboBox2.addItem('please select column2')
+        other.comboBox2 = QComboBox(centralWidget)
+        other.comboBox2.setGeometry(QRect(610, 3, 600, 31))
+        other.comboBox2.setObjectName(("comboBox2"))
+        other.comboBox2.addItem('please select column2')
         for i in range (0,dimension[1]):
-                self.comboBox2.addItem(columns[i])
+                other.comboBox2.addItem(columns[i])
 
+        button1= QPushButton('scatter points',other)
+        button1.move(100, 70)
+        button1.clicked.connect(other.on_click_scatter)
+        button2= QPushButton('scatter points with smooth lines', other)
+        button2.resize(200, 32)
+        button2.move(300, 70)
+        button2.clicked.connect(other.on_click_scatter_smooth)
+        button3= QPushButton(' lines', other)
+        button3.move(600, 70)
+        button3.clicked.connect(other.on_click_lines)
+        other.show()
+        self.destroy()
     def load_csv_file(self):
         global flag
         flag=0
@@ -133,8 +161,9 @@ class MainFrame(QMainWindow):
         for i in range(0, 1):
             for j in range(0, len(column_names)):
                 item = QTableWidgetItem(column_names[j])
+                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 self.tableWidget.setItem(i, j, item)
-        print(column_names)
+
         for i in range(1, df[0]):
             for j in range(0, df[1]):
                 value = str(list[i][j])
