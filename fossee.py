@@ -2,18 +2,22 @@ from PyQt5 import QtGui, QtWidgets
 import sys
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QActionGroup, QFileDialog, \
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox, QMessageBox
-from PyQt5.QtGui import QIcon
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox, QMessageBox, QGraphicsScene
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QRect, Qt
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from PyQt5.uic.properties import QtCore
-from scipy.interpolate import spline
+from scipy.interpolate import spline, interp1d
 from PyQt5 import QtGui, QtWidgets
+import os
+from sklearn import preprocessing
 data = pd.DataFrame()
+
 class MainFrame(QMainWindow):
     FrameList = []
+    flag = 0
     global option
     global fileName
     fileName="empty"
@@ -30,6 +34,7 @@ class MainFrame(QMainWindow):
         self.actionPlot_Data.triggered.connect(self.plot)
         self.menuEdit.triggered.connect(self.edit_data)
         self.menuAdd_Data.triggered.connect(self.add_data)
+        self.save_plot.triggered.connect(self.saveAsPNG)
     def add_data(self):
         if(data.empty):
             QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First")
@@ -53,11 +58,12 @@ class MainFrame(QMainWindow):
             other.show()
             self.destroy()
     def on_click_scatter(self):
+        self.flag=1
         plt.title('scatter plot')
-        plt.xlabel('x-axis')
-        plt.ylabel('y-axis')
         text1 = str(self.comboBox1.currentText())
         text2 = str(self.comboBox2.currentText())
+        plt.xlabel(text1)
+        plt.ylabel(text2)
         if(text1 =='please select column1' and text2 =='please select column2'):
             QMessageBox.about(self, "Plotting", "select columns first")
         elif (text1 =='please select column1' ):
@@ -71,12 +77,15 @@ class MainFrame(QMainWindow):
             y_axis = data[text2].values
             plt.scatter(x_axis,y_axis)
             plt.show()
+
     def on_click_scatter_smooth(self):
+        self.flag=1
         plt.title('scatter points with smooth lines')
-        plt.xlabel('x-axis')
-        plt.ylabel('y-axis')
+        
         text1 = str(self.comboBox1.currentText())
         text2 = str(self.comboBox2.currentText())
+        plt.xlabel(text1)
+        plt.ylabel(text2)
         if (text1 == 'please select column1' and text2 == 'please select column2'):
             QMessageBox.about(self, "Plotting", "select columns first")
         elif (text1 == 'please select column1'):
@@ -86,19 +95,23 @@ class MainFrame(QMainWindow):
         elif (text1 == text2):
             QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different")
         else:
-            x_axis = data[text1].values
-            y_axis = data[text2].values
-            x_smooth = np.linspace(x_axis.min(), x_axis.max(),len(x_axis)*10)
+            x_axis = data[text1]
+            y_axis = data[text2]
+            x_smooth = np.linspace(x_axis.min(), x_axis.max(),500)
+            #f = interp1d(x_axis, y_axis,kind='quadratic')
+         #   y_smooth = f(x_smooth)
             y_smooth = spline(x_axis,y_axis,x_smooth)
             plt.plot(x_smooth, y_smooth)
             plt.scatter(x_axis,y_axis)
             plt.show()
     def on_click_lines(self):
+        self.flag=1
         plt.title('Line Plot')
-        plt.xlabel('x-axis')
-        plt.ylabel('y-axis')
+        global data
         text1 = str(self.comboBox1.currentText())
         text2= str(self.comboBox2.currentText())
+        plt.xlabel(text1)
+        plt.ylabel(text2)
         if (text1 == 'please select column1' and text2 == 'please select column2'):
             QMessageBox.about(self, "Plotting", "select columns first")
         elif (text1 == 'please select column1'):
@@ -113,6 +126,17 @@ class MainFrame(QMainWindow):
             plt.plot(x_axis,y_axis)
             plt.show()
 
+    def saveAsPNG(self):
+        if (not data.empty):
+            if(self.flag==0):
+                QMessageBox.about(self, 'Important', "please plot first!!")
+            else:
+                self.plt.savefig("path_graph_cities.png")
+                QMessageBox.about(self, 'Important', "Figure is saved to your folder!!")
+                plt.show()
+                self.flag=0
+        else:
+            QMessageBox.about(self, 'Important', "Please Load Data First !!")
     def plot(self):
         if (data.empty):
             QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First")
@@ -164,6 +188,7 @@ class MainFrame(QMainWindow):
         self.layout.addWidget(self.tableWidget)
         self.setLayout(self.layout)
         self.show()
+
 
     def createTable(self):
         df=data.shape
