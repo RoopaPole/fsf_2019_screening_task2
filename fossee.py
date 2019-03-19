@@ -53,8 +53,8 @@ class MainFrame(QMainWindow):
             MainFrame.FrameList.append(other)
             other.editTable()
             other.layout = QVBoxLayout()
-            other.layout.addWidget(self.tableWidget)
-            other.setLayout(self.layout)
+            other.layout.addWidget(other.tableWidget)
+            other.setLayout(other.layout)
             other.show()
             self.destroy()
     def on_click_scatter(self):
