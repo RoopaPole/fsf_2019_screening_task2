@@ -46,7 +46,7 @@
       
    ->after selecting two columns you can click on any on of the three buttons which shows plotting between two columns.
    
-     and labels x-axis,y-axis accordingly to the selected columns and also title is added to the plot.
+   and labels x-axis,y-axis accordingly to the selected columns and also title is added to the plot.
      
    ->3 buttons are:
    
