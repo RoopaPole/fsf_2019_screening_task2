@@ -1,0 +1,6 @@
+requirements:
+	1.pip install PyQt5
+	2.pip install matplotlib
+	3.pip install pandas
+	4.pip install numpy
+	5.pip install scipy
