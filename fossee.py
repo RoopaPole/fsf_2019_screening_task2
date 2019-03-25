@@ -31,8 +31,8 @@ class MainFrame(QMainWindow):
         self.setScreen()
         loadUi('Screen.ui', self)
         self.actionLoad.triggered.connect(self.load_csv_file)
-        self.actionPlot_Data.triggered.connect(self.plot)
         self.menuEdit.triggered.connect(self.edit_data)
+        self.actionPlot_Data.triggered.connect(self.plot)
         self.menuAdd_Data.triggered.connect(self.add_data)
         self.save_plot.triggered.connect(self.saveAsPNG)
     def add_data(self):
@@ -98,11 +98,12 @@ class MainFrame(QMainWindow):
             x_axis = data[text1]
             y_axis = data[text2]
             x_smooth = np.linspace(x_axis.min(), x_axis.max(),500)
-            #f = interp1d(x_axis, y_axis,kind='quadratic')
-         #   y_smooth = f(x_smooth)
+           # f = interp1d(x_axis, y_axis,kind='quadratic')
+            #y_smooth = f(x_smooth)
             y_smooth = spline(x_axis,y_axis,x_smooth)
-            plt.plot(x_smooth, y_smooth)
+
             plt.scatter(x_axis,y_axis)
+            plt.plot(x_smooth, y_smooth)
             plt.show()
     def on_click_lines(self):
         self.flag=1
@@ -124,17 +125,25 @@ class MainFrame(QMainWindow):
             x_axis= data[text1].values
             y_axis= data[text2].values
             plt.plot(x_axis,y_axis)
-            plt.show()
+            #plt.savefig('foo.png', bbox_inches='tight')
+           # self.scene = QGraphicsScene()
+            #self.graphicsView.setScene(self.scene)
 
+            plt.show()
+       #     plt.close()
     def saveAsPNG(self):
         if (not data.empty):
             if(self.flag==0):
-                QMessageBox.about(self, 'Important', "please plot first!!")
+                QMessageBox.about(self.plt, 'Important', "please plot first!!")
             else:
-                self.plt.savefig("path_graph_cities.png")
-                QMessageBox.about(self, 'Important', "Figure is saved to your folder!!")
-                plt.show()
-                self.flag=0
+                print("hello roopa")
+                options = QFileDialog.Options()
+                options |= QFileDialog.DontUseNativeDialog
+                imgPath= QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()","Save As Image",
+                                                                   "PNG (*.png)",options=options)
+               # pixMap = QPixmap()
+               # pixMap = self.graphicsView.grab()
+               # pixMap.save(imgPath)
         else:
             QMessageBox.about(self, 'Important', "Please Load Data First !!")
     def plot(self):
