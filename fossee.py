@@ -76,6 +76,7 @@ class MainFrame(QMainWindow):
             x_axis = data[text1].values
             y_axis = data[text2].values
             plt.scatter(x_axis,y_axis)
+            plt.savefig('scatter', bbox_inches='tight')
             plt.show()
 
     def on_click_scatter_smooth(self):
@@ -101,9 +102,10 @@ class MainFrame(QMainWindow):
            # f = interp1d(x_axis, y_axis,kind='quadratic')
             #y_smooth = f(x_smooth)
             y_smooth = spline(x_axis,y_axis,x_smooth)
-
+            plt.savefig('smooth.png', bbox_inches='tight')
             plt.scatter(x_axis,y_axis)
             plt.plot(x_smooth, y_smooth)
+
             plt.show()
     def on_click_lines(self):
         self.flag=1
@@ -125,7 +127,7 @@ class MainFrame(QMainWindow):
             x_axis= data[text1].values
             y_axis= data[text2].values
             plt.plot(x_axis,y_axis)
-            #plt.savefig('foo.png', bbox_inches='tight')
+            plt.savefig('lines.png', bbox_inches='tight')
            # self.scene = QGraphicsScene()
             #self.graphicsView.setScene(self.scene)
 
@@ -134,7 +136,7 @@ class MainFrame(QMainWindow):
     def saveAsPNG(self):
         if (not data.empty):
             if(self.flag==0):
-                QMessageBox.about(self.plt, 'Important', "please plot first!!")
+                QMessageBox.about(self, 'Important', "please plot first!!")
             else:
                 print("hello roopa")
                 options = QFileDialog.Options()
