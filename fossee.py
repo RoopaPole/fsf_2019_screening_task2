@@ -20,7 +20,7 @@ class MainFrame(QMainWindow):
     flag = 0
     global option
     global fileName
-    fileName="empty"
+    imageTitle = 'rj'
     def __init__(self):
         super().__init__()
         self.title = 'PyQt5 simple window'
@@ -59,7 +59,8 @@ class MainFrame(QMainWindow):
             self.destroy()
     def on_click_scatter(self):
         self.flag=1
-        plt.title('scatter plot')
+        self.imageTitle ='Scatter Plot'
+        plt.title(self.imageTitle)
         text1 = str(self.comboBox1.currentText())
         text2 = str(self.comboBox2.currentText())
         plt.xlabel(text1)
@@ -76,12 +77,12 @@ class MainFrame(QMainWindow):
             x_axis = data[text1].values
             y_axis = data[text2].values
             plt.scatter(x_axis,y_axis)
-            plt.savefig('scatter', bbox_inches='tight')
+            plt.savefig("plottedImage")
             plt.show()
-
     def on_click_scatter_smooth(self):
         self.flag=1
-        plt.title('scatter points with smooth lines')
+        self.imageTitle ='Scatter Plot With Smooth Lines'
+        plt.title(self.imageTitle)
         
         text1 = str(self.comboBox1.currentText())
         text2 = str(self.comboBox2.currentText())
@@ -102,14 +103,16 @@ class MainFrame(QMainWindow):
            # f = interp1d(x_axis, y_axis,kind='quadratic')
             #y_smooth = f(x_smooth)
             y_smooth = spline(x_axis,y_axis,x_smooth)
-            plt.savefig('smooth.png', bbox_inches='tight')
             plt.scatter(x_axis,y_axis)
             plt.plot(x_smooth, y_smooth)
-
+            plt.savefig("plottedImage")
             plt.show()
+
+
     def on_click_lines(self):
         self.flag=1
-        plt.title('Line Plot')
+        self.imageTitle='Line Plot'
+        plt.title(self.imageTitle)
         global data
         text1 = str(self.comboBox1.currentText())
         text2= str(self.comboBox2.currentText())
@@ -127,25 +130,16 @@ class MainFrame(QMainWindow):
             x_axis= data[text1].values
             y_axis= data[text2].values
             plt.plot(x_axis,y_axis)
-            plt.savefig('lines.png', bbox_inches='tight')
-           # self.scene = QGraphicsScene()
-            #self.graphicsView.setScene(self.scene)
+            plt.savefig("plottedImage")
 
             plt.show()
-       #     plt.close()
-    def saveAsPNG(self):
+    def saveAsPNG(self,plt):
         if (not data.empty):
             if(self.flag==0):
                 QMessageBox.about(self, 'Important', "please plot first!!")
             else:
-                print("hello roopa")
-                options = QFileDialog.Options()
-                options |= QFileDialog.DontUseNativeDialog
-                imgPath= QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()","Save As Image",
-                                                                   "PNG (*.png)",options=options)
-               # pixMap = QPixmap()
-               # pixMap = self.graphicsView.grab()
-               # pixMap.save(imgPath)
+               QMessageBox.about(self, 'Isssmportant', self.imageTitle+ " "+"is saved to your folder")
+
         else:
             QMessageBox.about(self, 'Important', "Please Load Data First !!")
     def plot(self):
