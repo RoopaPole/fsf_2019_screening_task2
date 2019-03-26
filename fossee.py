@@ -7,7 +7,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import spline
+TABLE_FIXED_HEIGHT = 500
+TABLE_FIXED_WIDTH= 700
 data = pd.DataFrame()
+
 class MainFrame(QMainWindow):
     FrameList = []
     flag = 0
@@ -71,6 +74,8 @@ class MainFrame(QMainWindow):
                 item = QTableWidgetItem(value)
                 self.tableWidget.setItem(i, j, item)
         self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.setFixedHeight(TABLE_FIXED_HEIGHT)
+        self.tableWidget.setFixedWidth(TABLE_FIXED_WIDTH)
     def on_click_scatter(self):
         self.flag=1
         self.imageTitle ='Scatter Plot'
@@ -229,6 +234,8 @@ class MainFrame(QMainWindow):
                 item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 self.tableWidget.setItem(i, j, item)
         self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.setFixedHeight(TABLE_FIXED_HEIGHT)
+        self.tableWidget.setFixedWidth(TABLE_FIXED_WIDTH)
 
 if __name__ == '__main__':
     application = QApplication(sys.argv)
