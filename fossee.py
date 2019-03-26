@@ -1,24 +1,16 @@
-from PyQt5 import QtGui, QtWidgets
 import sys
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QActionGroup, QFileDialog, \
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox, QMessageBox, QGraphicsScene
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import pyqtSlot, QRect, Qt
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QFileDialog, \
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QComboBox, QMessageBox
+from PyQt5.QtCore import  QRect, Qt
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from PyQt5.uic.properties import QtCore
-from scipy.interpolate import spline, interp1d
-from PyQt5 import QtGui, QtWidgets
-import os
-from sklearn import preprocessing
+from scipy.interpolate import spline
 data = pd.DataFrame()
-
 class MainFrame(QMainWindow):
     FrameList = []
     flag = 0
-    global option
     global fileName
     imageTitle = 'rj'
     def __init__(self):
@@ -35,19 +27,20 @@ class MainFrame(QMainWindow):
         self.actionPlot_Data.triggered.connect(self.plot)
         self.menuAdd_Data.triggered.connect(self.add_data)
         self.save_plot.triggered.connect(self.saveAsPNG)
-    def add_data(self):
-        if(data.empty):
-            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First")
-        else:
-            rowCount = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(rowCount)
-            QMessageBox.about(self, "Add Data", "Empty row is Added to The Table You can Add the data now")
     def setScreen(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+    def add_data(self):
+        if(data.empty):
+            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First!!!")
+        else:
+            rowCount = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(rowCount)
+            QMessageBox.about(self, "Add Data", "Empty row is Added to The Table You can Add the data now!!!")
+
     def edit_data(self):
         if (data.empty):
-            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First")
+            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First!!!")
         else:
             other = MainFrame()
             MainFrame.FrameList.append(other)
@@ -57,6 +50,27 @@ class MainFrame(QMainWindow):
             other.setLayout(other.layout)
             other.show()
             self.destroy()
+    def editTable(self):
+        df = data.shape
+        centralWidget = QWidget(self)
+        self.setCentralWidget(centralWidget)
+        self.tableWidget = QTableWidget(centralWidget)
+        self.tableWidget.setRowCount(df[0])
+        self.tableWidget.setColumnCount(df[1])
+        list = data.values
+        column_names = data.columns
+        for i in range(0, 1):
+            for j in range(0, len(column_names)):
+                item = QTableWidgetItem(column_names[j])
+                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.tableWidget.setItem(i, j, item)
+
+        for i in range(1, df[0]):
+            for j in range(0, df[1]):
+                value = str(list[i][j])
+                item = QTableWidgetItem(value)
+                self.tableWidget.setItem(i, j, item)
+        self.tableWidget.resizeColumnsToContents()
     def on_click_scatter(self):
         self.flag=1
         self.imageTitle ='Scatter Plot'
@@ -66,13 +80,13 @@ class MainFrame(QMainWindow):
         plt.xlabel(text1)
         plt.ylabel(text2)
         if(text1 =='please select column1' and text2 =='please select column2'):
-            QMessageBox.about(self, "Plotting", "select columns first")
+            QMessageBox.about(self, "Plotting", "Select Columns first")
         elif (text1 =='please select column1' ):
-            QMessageBox.about(self, "Plotting", "select column1")
+            QMessageBox.about(self, "Plotting", "Select Column1")
         elif (text2 == 'please select column2'):
-            QMessageBox.about(self, "Plotting", "select column2")
+            QMessageBox.about(self, "Plotting", "Select Column2")
         elif(text1 == text2):
-            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different")
+            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different!!!")
         else:
             x_axis = data[text1].values
             y_axis = data[text2].values
@@ -89,13 +103,13 @@ class MainFrame(QMainWindow):
         plt.xlabel(text1)
         plt.ylabel(text2)
         if (text1 == 'please select column1' and text2 == 'please select column2'):
-            QMessageBox.about(self, "Plotting", "select columns first")
+            QMessageBox.about(self, "Plotting", "Select Columns first")
         elif (text1 == 'please select column1'):
-            QMessageBox.about(self, "Plotting", "select column1")
+            QMessageBox.about(self, "Plotting", "Select Column1")
         elif (text2 == 'please select column2'):
-            QMessageBox.about(self, "Plotting", "select column2")
+            QMessageBox.about(self, "Plotting", "Select Column2")
         elif (text1 == text2):
-            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different")
+            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different!!!")
         else:
             x_axis = data[text1]
             y_axis = data[text2]
@@ -119,32 +133,31 @@ class MainFrame(QMainWindow):
         plt.xlabel(text1)
         plt.ylabel(text2)
         if (text1 == 'please select column1' and text2 == 'please select column2'):
-            QMessageBox.about(self, "Plotting", "select columns first")
+            QMessageBox.about(self, "Plotting", "Select Columns first")
         elif (text1 == 'please select column1'):
-            QMessageBox.about(self, "Plotting", "select column1")
+            QMessageBox.about(self, "Plotting", "Select Column1")
         elif (text2 == 'please select column2'):
-            QMessageBox.about(self, "Plotting", "select column2")
+            QMessageBox.about(self, "Plotting", "Select Column2")
         elif (text1 == text2):
-            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different")
+            QMessageBox.about(self, "Plotting", "x-axis and y-axis should not be same please select different!!!")
         else:
             x_axis= data[text1].values
             y_axis= data[text2].values
             plt.plot(x_axis,y_axis)
             plt.savefig("plottedImage")
-
             plt.show()
     def saveAsPNG(self,plt):
         if (not data.empty):
             if(self.flag==0):
                 QMessageBox.about(self, 'Important', "please plot first!!")
             else:
-               QMessageBox.about(self, 'Isssmportant', self.imageTitle+ " "+"is saved to your folder")
+               QMessageBox.about(self, 'Save As PNG', self.imageTitle+ " "+"is saved to your folder you can check over there")
 
         else:
-            QMessageBox.about(self, 'Important', "Please Load Data First !!")
+            QMessageBox.about(self, 'Important', "Please Load Data First !!!")
     def plot(self):
         if (data.empty):
-            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First")
+            QMessageBox.about(self, "Empty CSV File", "Please Load CSV File First!!!")
         else:
             other = MainFrame()
             MainFrame.FrameList.append(other)
@@ -180,7 +193,7 @@ class MainFrame(QMainWindow):
             self.destroy()
     def load_csv_file(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
+        options= QFileDialog.DontUseNativeDialog
         self.fileName= QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
                                        "Python Files (*.csv)", options=options)
 
@@ -215,26 +228,8 @@ class MainFrame(QMainWindow):
                 item = QTableWidgetItem(value)
                 item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 self.tableWidget.setItem(i, j, item)
-    def editTable(self):
-        df = data.shape
-        centralWidget = QWidget(self)
-        self.setCentralWidget(centralWidget)
-        self.tableWidget = QTableWidget(centralWidget)
-        self.tableWidget.setRowCount(df[0])
-        self.tableWidget.setColumnCount(df[1])
-        list = data.values
-        column_names = data.columns
-        for i in range(0, 1):
-            for j in range(0, len(column_names)):
-                item = QTableWidgetItem(column_names[j])
-                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-                self.tableWidget.setItem(i, j, item)
+        self.tableWidget.resizeColumnsToContents()
 
-        for i in range(1, df[0]):
-            for j in range(0, df[1]):
-                value = str(list[i][j])
-                item = QTableWidgetItem(value)
-                self.tableWidget.setItem(i, j, item)
 if __name__ == '__main__':
     application = QApplication(sys.argv)
     start= MainFrame()
