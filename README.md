@@ -30,9 +30,9 @@
         
   # Working of application:
   
-   ->csv file is loaded by clicking on 'Load' option which is there under "File" menu.
+   ->CSV file is loaded by clicking on 'Load' option which is there under "File" menu.
    
-   -> after loading the csv file it displays the content of csv file in the form of table.
+   -> after loading the csv file it displays the content of CSV file in the form of table.
    
    -> you can edit the data by clicking on 'Edit data' available under "File" menu.
    
@@ -40,13 +40,13 @@
    
    -> if you want to plot the data you have to select two columns from two comboboxes.
    
-         -if you select only column1 or column2 it raises a message box saying like please select columns again and  if the
+         -if you select only column1 or column2 it raises a message box saying like "P lease select columns again!!!" and  if the
          
          columns are same also  it raises a message as x-axis and y-axis should not be same.
       
-   ->after selecting two columns you can click on any on of the three buttons which shows plotting between two columns.
+   ->after selecting two columns you can click on any one of the three buttons which shows plotting between two columns.
    
-   and labels x-axis,y-axis accordingly to the selected columns and also title is added to the plot.
+   and lable x-axis,y-axis are added accordingly to the selected columns and also title is added to the ploted image.
      
    ->3 buttons are:
    
@@ -55,9 +55,12 @@
          2.scatter points with smooth lines.
          
          3.lines.
+  **NOTE: make sure that plotting should be between only numric data, that means you have to select the columns with numeric data.
        
-  ->you can save plotted image as .png by selecting 'SaveasPNG' option under "File" menu.
+  ->After plotting you can save plotted image as .png by selecting 'SaveasPNG' option under "File" menu.
   
-  ->before loading the csv file if you select 'edit data' or 'plot data' or 'SaveasPNG' or 'AddData' it shows a message box by saying 
+  ->before loading the CSV file if you select 'edit data'  or  'plot data'  or  'SaveasPNG'  or  'AddData'  it shows a message box by 
   
-  that please load csv file.
+  saying  that "Please load CSV file First!!!".
+  
+  ->After Laoding the data if you select the option Save as PNG then it raises a messge line "Please Plot First!!!"
